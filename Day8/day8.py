@@ -15,7 +15,6 @@ with open('input.txt') as f:
 # Find the number of visible trees in the forest.
 def find_number_of_visible_trees(forest: list) -> int:
     edge_trees = find_number_of_trees_on_edges(forest)
-    print(f'Number of trees on the edge of the forest: {edge_trees}')
     trees_horizontally = find_trees_horizontally(forest)
     # transpose the forest
     forest_transposed = list(map(list, zip(*forest)))
@@ -77,3 +76,91 @@ def find_trees_right_for_row_number(row: list, row_number) -> list:
 
 answer = find_number_of_visible_trees(data)
 print(f'Visible trees: {answer}')
+
+
+# Part 2
+class Tree(object):
+    def __init__(self):
+        self.height = -1
+        self.scenic_score = -1
+        self.x = -1
+        self.y = -1
+
+    def __repr__(self):
+        return f'({self.x}, {self.y} -> {self.height} [{self.scenic_score}])'
+
+    def find_scenic_score(self, forest: list):
+        view_distance_right = self.find_view_distance_right(forest)
+        view_distance_left = self.find_view_distance_left(forest)
+        view_distance_up = self.find_view_distance_up(forest)
+        view_distance_down = self.find_view_distance_down(forest)
+        self.scenic_score = view_distance_left * view_distance_right * view_distance_up * view_distance_down
+
+    def find_view_distance_right(self, forest: list) -> int:
+        current_row = forest[self.x]
+        view_distance = 1
+        start_col = self.y + 1
+        end_col = len(current_row) - 1
+        for i in range(start_col, end_col):
+            if current_row[i] >= self.height:
+                break
+            view_distance += 1
+        return view_distance
+
+    def find_view_distance_left(self, forest: list) -> int:
+        current_row = forest[self.x]
+        view_distance = 1
+        start_col = self.y - 1
+        end_col = 0
+        for i in range(start_col, end_col, -1):
+            if current_row[i] >= self.height:
+                break
+            view_distance += 1
+        return view_distance
+
+    def find_view_distance_up(self, forest: list) -> int:
+        view_distance = 1
+        start_row = self.x - 1
+        end_row = 0
+        for i in range(start_row, end_row, -1):
+            if forest[i][self.y] >= self.height:
+                break
+            view_distance += 1
+        return view_distance
+
+    def find_view_distance_down(self, forest: list) -> int:
+        view_distance = 1
+        start_row = self.x + 1
+        end_row = len(forest) - 1
+        for i in range(start_row, end_row):
+            if forest[i][self.y] >= self.height:
+                break
+            view_distance += 1
+        return view_distance
+
+
+def find_max_scenic_score(forest: list) -> int:
+    trees = to_trees(forest)
+    for tree in trees:
+        tree.find_scenic_score(forest)
+
+    max_scenic_score = max([tree.scenic_score for tree in trees])
+    return max_scenic_score
+
+
+def to_trees(forest: list[list[int]]) -> list[Tree]:
+    trees = []
+    for y in range(len(forest)):
+        for x in range(len(forest[y])):
+            tree = Tree()
+            tree.height = forest[x][y]
+            tree.x = x
+            tree.y = y
+            trees.append(tree)
+
+    trees.sort(key=lambda t: (t.x, t.y))
+    return trees
+
+
+# 1470 is too low
+print(f'Max scenic score: {find_max_scenic_score(data)}')
