@@ -7,7 +7,7 @@
 # All trees on the edge of the grid are visible,
 # so we can just add the number of trees on the edge of the grid to the answer.
 
-with open('input.txt') as f:
+with open('test.txt') as f:
     data = [list(map(int, line.strip())) for line in f]
 
 
@@ -95,8 +95,11 @@ class Tree(object):
         view_distance_up = self.find_view_distance_up(forest)
         view_distance_down = self.find_view_distance_down(forest)
         self.scenic_score = view_distance_left * view_distance_right * view_distance_up * view_distance_down
+        print(self)
 
     def find_view_distance_right(self, forest: list) -> int:
+        if self.is_on_edge(forest):
+            return 0
         current_row = forest[self.x]
         view_distance = 1
         start_col = self.y + 1
@@ -108,6 +111,8 @@ class Tree(object):
         return view_distance
 
     def find_view_distance_left(self, forest: list) -> int:
+        if self.is_on_edge(forest):
+            return 0
         current_row = forest[self.x]
         view_distance = 1
         start_col = self.y - 1
@@ -119,6 +124,8 @@ class Tree(object):
         return view_distance
 
     def find_view_distance_up(self, forest: list) -> int:
+        if self.is_on_edge(forest):
+            return 0
         view_distance = 1
         start_row = self.x - 1
         end_row = 0
@@ -129,6 +136,8 @@ class Tree(object):
         return view_distance
 
     def find_view_distance_down(self, forest: list) -> int:
+        if self.is_on_edge(forest):
+            return 0
         view_distance = 1
         start_row = self.x + 1
         end_row = len(forest) - 1
@@ -137,6 +146,13 @@ class Tree(object):
                 break
             view_distance += 1
         return view_distance
+
+    def is_on_edge(self, forest: list) -> bool:
+        if self.x == 0 or self.x == len(forest) - 1:
+            return True
+        if self.y == 0 or self.y == len(forest[0]) - 1:
+            return True
+        return False
 
 
 def find_max_scenic_score(forest: list) -> int:
@@ -162,5 +178,4 @@ def to_trees(forest: list[list[int]]) -> list[Tree]:
     return trees
 
 
-# 1470 is too low
 print(f'Max scenic score: {find_max_scenic_score(data)}')
