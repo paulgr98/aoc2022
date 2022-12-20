@@ -7,7 +7,7 @@
 # All trees on the edge of the grid are visible,
 # so we can just add the number of trees on the edge of the grid to the answer.
 
-with open('test.txt') as f:
+with open('input.txt') as f:
     data = [list(map(int, line.strip())) for line in f]
 
 
@@ -95,7 +95,6 @@ class Tree(object):
         view_distance_up = self.find_view_distance_up(forest)
         view_distance_down = self.find_view_distance_down(forest)
         self.scenic_score = view_distance_left * view_distance_right * view_distance_up * view_distance_down
-        print(self)
 
     def find_view_distance_right(self, forest: list) -> int:
         if self.is_on_edge(forest):
